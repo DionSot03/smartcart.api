@@ -47,7 +47,17 @@ def delete_all_products():
 @app.route('/carts', methods=['POST'])
 def create_new_cart():
     cart_id = create_cart()
-    return jsonify({'message': 'Cart created', 'cart_id': cart_id}), 201
+
+    if cart_id is None:
+        return jsonify({
+            'error': 'Υπάρχει ήδη ενεργό καλάθι. Ολοκληρώστε πρώτα την τρέχουσα αγορά.'
+        }), 400
+
+    return jsonify({
+        'message': 'Καλάθι δημιουργήθηκε επιτυχώς.',
+        'cart_id': cart_id
+    }), 201
+
 
 @app.route('/carts/<int:cart_id>', methods=['DELETE'])
 def delete_existing_cart(cart_id):
