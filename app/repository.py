@@ -86,18 +86,26 @@ def delete_all_products():
 def create_cart():
     conn = create_connection()
     cursor = conn.cursor()
-    created_at = datetime.now().isoformat()
 
+    # Έλεγχος για ήδη ενεργό καλάθι
+    cursor.execute("SELECT id FROM carts WHERE completed = 0")
+    existing = cursor.fetchone()
+    if existing:
+        conn.close()
+        return None
+
+    # Δημιουργία νέου καλαθιού
+    created_at = datetime.now().isoformat()
     cursor.execute("""
         INSERT INTO carts (created_at, completed)
         VALUES (?, 0)
     """, (created_at,))
-
     cart_id = cursor.lastrowid
+
     conn.commit()
     conn.close()
-
     return cart_id
+
 
 
 def delete_cart(cart_id):
