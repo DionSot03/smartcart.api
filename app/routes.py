@@ -85,10 +85,10 @@ def get_cart(cart_id):
         'total': round(sum(item['subtotal'] for item in items), 2)
     })
 
-@app.route('/carts/<int:cart_id>/items/<int:product_id>', methods=['DELETE'])
-def remove_item_from_cart(cart_id, product_id):
-    remove_from_cart(cart_id, product_id)
-    return jsonify({'message': f'Product {product_id} removed from cart {cart_id}'}), 200
+@app.route('/carts/<int:cart_id>/items/<int:cart_item_id>', methods=['DELETE'])
+def remove_item_from_cart(cart_id, cart_item_id):
+    remove_from_cart(cart_id, cart_item_id)
+    return jsonify({'message': f'Product {cart_item_id} removed from cart {cart_id}'}), 200
 
 @app.route('/carts/<int:cart_id>/checkout', methods=['POST'])
 def checkout(cart_id):
