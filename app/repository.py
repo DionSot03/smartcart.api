@@ -149,7 +149,7 @@ def view_cart(cart_id):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT p.id, p.name, p.category, p.price, ci.quantity
+        SELECT ci.id, p.id, p.name, p.category, p.price, ci.quantity
         FROM cart_items ci
         JOIN products p ON ci.product_id = p.id
         WHERE ci.cart_id = ?
@@ -161,12 +161,13 @@ def view_cart(cart_id):
     cart_items = []
     for row in rows:
         cart_items.append({
-            'product_id': row[0],
-            'name': row[1],
-            'category': row[2],
-            'price': row[3],
-            'quantity': row[4],
-            'subtotal': round(row[3] * row[4], 2)
+            'cart_item_id': row[0],     
+            'product_id': row[1],
+            'name': row[2],
+            'category': row[3],
+            'price': row[4],
+            'quantity': row[5],
+            'subtotal': round(row[4] * row[5], 2)
         })
 
     return cart_items
