@@ -173,13 +173,13 @@ def view_cart(cart_id):
     return cart_items
 
 
-def remove_from_cart(cart_id, product_id):
+def remove_from_cart(cart_id, cart_item_id):
     conn = create_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-        DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?
-    """, (cart_id, product_id))
+        DELETE FROM cart_items WHERE cart_id = ? AND id = ?
+    """, (cart_id, cart_item_id))
 
     conn.commit()
     conn.close()
