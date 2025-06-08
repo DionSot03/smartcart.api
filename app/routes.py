@@ -1,7 +1,6 @@
 from flask import request, jsonify
 from app import app
 from app.db import create_connection
-from app.web_scraper import scrape_from_html
 import pandas as pd
 from app.recipes import get_recipe_for 
 from app.analytics import get_purchase_statistics
@@ -9,6 +8,7 @@ from app.analytics import generate_suggested_cart
 from app.analytics import get_frequently_bought_together
 from app.bought_together import get_suggested_products
 from app.predictor import get_logistic_prediction
+from bs4 import BeautifulSoup
 
 from app.repository import (
     get_all_products, insert_products, delete_product_by_id, delete_all_products,
@@ -106,7 +106,7 @@ def compare_price():
     if not product_name:
         return jsonify({"error": "Λείπει το όνομα προϊόντος (parameter: ?product=...)"}), 400
 
-    # 🔍 1. Ανάκτηση από βάση
+    #  1. Ανάκτηση από βάση
     conn = create_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT name, price, description, image_url FROM products WHERE name LIKE ?", (f"%{product_name}%",))
@@ -118,28 +118,62 @@ def compare_price():
 
     db_name, db_price, db_desc, db_img = db_product
 
-    # 🔍 2. Scraping από δύο στατικά αρχεία
-    scraped1 = scrape_from_html('StaticShop1.html', product_name, 'StaticShop1')
-    scraped2 = scrape_from_html('StaticShop2.html', product_name, 'StaticShop2')
+    #  2. Scraping από StaticShop1
+    with open("StaticShop1.html", "r", encoding="utf-8") as f1:
+        soup1 = BeautifulSoup(f1, "html.parser")
 
-    # 🔍 3. Σύγκριση όλων των τιμών
-    all_prices = [
-        {
-            "Κατάστημα": "UnipiShop",
-            "Τιμή": db_price,
-            "Περιγραφή": db_desc,
-            "Εικόνα": db_img
-        }
-    ]
+    found1 = None
+    for div in soup1.find_all("div", class_="product"):
+        name = div.find("h2", class_="name").text.strip()
+        if product_name.lower() in name.lower():
+            try:
+                price = float(div.find("span", class_="price").text.strip())
+                description = div.find("p", class_="description").text.strip()
+                image_url = div.find("img", class_="image")["src"]
+                found1 = {
+                    "Κατάστημα": "StaticShop1",
+                    "Τιμή": price,
+                    "Περιγραφή": description,
+                    "Εικόνα": image_url
+                }
+            except:
+                pass
+            break
 
-    for scraped in [scraped1, scraped2]:
-        if 'price' in scraped:
-            all_prices.append({
-                "Κατάστημα": scraped["store"],
-                "Τιμή": scraped["price"],
-                "Περιγραφή": scraped.get("description", ""),
-                "Εικόνα": scraped.get("image_url", "")
-            })
+    #  3. Scraping από StaticShop2
+    with open("StaticShop2.html", "r", encoding="utf-8") as f2:
+        soup2 = BeautifulSoup(f2, "html.parser")
+
+    found2 = None
+    for div in soup2.find_all("div", class_="product"):
+        name = div.find("h2", class_="name").text.strip()
+        if product_name.lower() in name.lower():
+            try:
+                price = float(div.find("span", class_="price").text.strip())
+                description = div.find("p", class_="description").text.strip()
+                image_url = div.find("img", class_="image")["src"]
+                found2 = {
+                    "Κατάστημα": "StaticShop2",
+                    "Τιμή": price,
+                    "Περιγραφή": description,
+                    "Εικόνα": image_url
+                }
+            except:
+                pass
+            break
+
+    #  4. Σύγκριση
+    all_prices = [{
+        "Κατάστημα": "UnipiShop",
+        "Τιμή": db_price,
+        "Περιγραφή": db_desc,
+        "Εικόνα": db_img
+    }]
+
+    if found1:
+        all_prices.append(found1)
+    if found2:
+        all_prices.append(found2)
 
     if all_prices:
         cheapest = min(all_prices, key=lambda x: x["Τιμή"])["Κατάστημα"]
@@ -149,7 +183,7 @@ def compare_price():
     return jsonify({
         "Προϊόν": db_name,
         "Τιμή στο UnipiShop": db_price,
-        "Στατικά Καταστήματα": all_prices[1:],  # εξαιρεί την πρώτη (UnipiShop)
+        "Στατικά Καταστήματα": all_prices[1:],  # αγνοεί UnipiShop
         "Φθηνότερο στο": cheapest
     })
 
