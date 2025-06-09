@@ -1,168 +1,144 @@
 [
   {
     "name": "Σαλονικιός Χαλβάς Φιστίκι Χύμα 500γρ. (5,60€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2023/02/13465-768x768-1.jpg?resize=170%2C170&ssl=1",
     "price": 2.8
   },
   {
     "name": "ΧΡΥΣΕΛΙΑ Έξτρα Παρθένο Ελαιόλαδο 4lt (13,30 €/λίτρο)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2023/01/58571.jpg?resize=170%2C170&ssl=1",
     "price": 53.2
   },
   {
     "name": "ΟΡΕΙΝΟ Ημίσκληρο τυρί   ~500γρ.     (10,88€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2022/11/39eee751af30032eeece2f48de2de4ba_L.jpg?resize=170%2C170&ssl=1",
     "price": 5.44
   },
   {
     "name": "ΑΡΒΑΝΙΤΗ Ντόπιο Τυρί Τάπερ 4kg σε  μερίδες  (8,29€/ κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2022/11/showthumb-1.jpg?resize=170%2C170&ssl=1",
     "price": 33.12
   },
   {
     "name": "ΚΟΛΙΟΣ Άσπρο χύμα δοχείο   1000γρ.        (6,96€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2022/11/Aspro-tin-15kg.png?resize=170%2C170&ssl=1",
     "price": 6.96
   },
   {
     "name": "Σταθώρη Πετρωτό Κατσικίσιο Τυρί  δοχείο (5 κιλά)  (13,60€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2022/09/PETROTO-5KG_MG_3720.jpg?resize=170%2C170&ssl=1",
     "price": 68.0
   },
   {
     "name": "Γρεβενών Κατσικίσιο  Τυρί Τζιάλλα  Τάπερ  ~7,900 γρ. (10,39/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": null,
     "price": 82.0
   },
   {
     "name": "ΜΑΧΙ Χαρτί υγείας 2φυλλο 115γρ.  40 ΡΟΛΑ  (3,24€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2022/07/35507.jpg?resize=170%2C170&ssl=1",
     "price": 14.89
   },
   {
     "name": "Γαϊτατζή Ελιές Θρούμπες 600γρ. (6,82€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2022/01/taper-600g-throubes.jpg?resize=170%2C170&ssl=1",
     "price": 4.09
   },
   {
     "name": "Green cola αναψυκτικό 1,5 lt  (0,88€/λίτρο)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/12/green_cola_pet-1.5l_gr-superbrands.png?resize=170%2C170&ssl=1",
     "price": 1.32
   },
   {
     "name": "Douwe Egberts Στιγμιαίος Καφές 95γρ. (72,10€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/12/3303_4-200x200_crop_thumb.jpg?resize=170%2C170&ssl=1",
     "price": 6.85
   },
   {
     "name": "Φέτα Βαλμά ΠΟΠ Χύμα ~1000γρ. ( Τιμή κιλού   10,90 ευρώ    η τελική τιμή προϊόντος  θα  διαμορφωθεί κατά το ζύγισμα) )",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/12/D9qt3Y7zEq5xtXJVh1yg.jpeg?resize=170%2C170&ssl=1",
     "price": 10.9
   },
   {
     "name": "Cavino Philoxenia  Κρασί Λευκό 750ml  1+1Δώρο  (3,13€/λίτρο)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/11/cavino-philoxenia-dry-white-wine-750ml.png?resize=170%2C170&ssl=1",
     "price": 4.7
   },
   {
     "name": "Cavino Philoxenia Κρασί  Κόκκινο 750ml  1+1 Δώρο  (3,13€/λίτρο)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/11/cavino-philoxenia-dry-red-wine-750ml.png?resize=170%2C170&ssl=1",
     "price": 4.7
   },
   {
     "name": "Προίκας Κασέρι Σοχού Π.Ο.Π. ~ 500ΓΡ.   (Τιμή Κιλού 19,00 ευρώ)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/07/PROIK_KASS2-600x539-1.jpg?resize=170%2C170&ssl=1",
     "price": 8.5
   },
   {
     "name": "Σταθώρη Πετρωτό Τυρί  Χύμα Δοχείο  1000γρ.  (13,50€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/06/PETROTO.jpg?resize=170%2C170&ssl=1",
     "price": 13.5
   },
   {
     "name": "Agros Πορτοκάλι Νέκταρ 1lt (0,97€/λίτρο)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/05/17100601-01.jpg?resize=170%2C170&ssl=1",
     "price": 0.97
   },
   {
     "name": "ΜΥΛΟΙ ΑΓΙΟΥ ΓΕΩΡΓΙΟΥ Αλεύρι για Όλες Τις Χρήσεις 1Κιλό  (1,78€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/04/1-53.jpg?resize=170%2C170&ssl=1",
     "price": 1.78
   },
   {
     "name": "Μύλοι Ροδιά Αλεύρι  Για Όλες Τις Χρήσεις 1 Κιλό   (1,05€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/04/mr5k.png?resize=170%2C170&ssl=1",
     "price": 1.05
   },
   {
     "name": "ΒΙΚΟΣ Αναψυκτικό Σόδα με Ανθρακικό 6x300ml    (0,96€/λίτρο)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/04/bikos_soda_6c0_33l_apo_07_2018_a.jpg?resize=170%2C170&ssl=1",
     "price": 1.92
   },
   {
     "name": "Lay’s Πατατάκια Με Αλάτι 400γρ.  (6,23€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/03/lay-s-chips-salted-400g-normal.jpg?resize=170%2C170&ssl=1",
     "price": 2.49
   },
   {
     "name": "Μπακαλιάρος  Νορβηγίας υγράλατος  με κόκκαλο   ~750γρ.   Τιμή κιλού  14,50  ευρώ ( Η τελική τιμή του προϊόντος  θα διαμορφωθεί κατά το ζύγισμα  )",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/03/3521-COD-NORWAY-800_1200_.png?resize=170%2C170&ssl=1",
     "price": 10.87
   },
   {
     "name": "FIDEL Ουζομεζές σε ηλιέλαιο 220γρ. (16,32€/κιλό)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/02/DSC_0479-.jpg?resize=170%2C170&ssl=1",
     "price": 3.59
   },
   {
     "name": "Φυλλωτά Λαχανά 42cm 6τεμ.(0,65€/τεμ.)",
-    "category": "Είδη Άρτου",
     "description": null,
     "image_url": "https://i0.wp.com/www.bakalmarket.gr/wp-content/uploads/2021/02/filota-laxana-megala.jpg?resize=170%2C170&ssl=1",
     "price": 3.91

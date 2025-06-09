@@ -52,8 +52,7 @@ def scrape_bakalmarket_selenium(return_df=False, save_json=True):
                 if match:
                     price = float(match.group(1).replace(",", "."))
             image_url = img_el["src"] if img_el and img_el.has_attr("src") else None
-            # Set category as "Είδη Άρτου" for all, or extract if possible
-            category = "Είδη Άρτου"
+            
             description = None
 
             print(f"Extracted: name={name}, price={price}, image_url={image_url}")
@@ -63,7 +62,6 @@ def scrape_bakalmarket_selenium(return_df=False, save_json=True):
 
             data.append({
                 "name": name,
-                "category": category,
                 "description": description,
                 "image_url": image_url,
                 "price": price
