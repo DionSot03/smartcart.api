@@ -1,9 +1,12 @@
 # app/predictor.py
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+import webbrowser
+import os
 from app.db import create_connection
 
-def get_logistic_prediction(product_id):
+def get_linear_prediction(product_id):
     conn = create_connection()
     cursor = conn.cursor()
 
@@ -12,47 +15,63 @@ def get_logistic_prediction(product_id):
     rows = cursor.fetchall()
     conn.close()
 
-    # Δημιουργία DataFrame
-    df = pd.DataFrame(rows, columns=['order_id', 'product_id'])
+    df = pd.DataFrame(rows, columns=["order_id", "product_id"])
+    basket = pd.get_dummies(df["product_id"]).groupby(df["order_id"]).sum()
 
-    # Hot-encoding: πίνακας με κάθε παραγγελία και αν είχε το κάθε προϊόν
-    basket = pd.get_dummies(df['product_id']).groupby(df['order_id']).sum()
-
-    # Έλεγχος αν υπάρχει το προϊόν στον πίνακα
-    if product_id not in basket.columns:
-        return {"error": "Δεν υπάρχουν αρκετά δεδομένα για το προϊόν."}
+    if product_id not in basket.columns or basket[product_id].sum() < 2:
+        return {"message": "Δεν υπάρχουν αρκετά δεδομένα για το προϊόν."}
 
     y = basket[product_id]
     X = basket.drop(columns=[product_id])
 
-    if y.sum() < 2:
-        return {"error": "Δεν υπάρχουν αρκετά δεδομένα για παλινδρόμηση."}
-
-    # Εκπαίδευση λογιστικής παλινδρόμησης
-    model = LogisticRegression(max_iter=1000)
+    model = LinearRegression()
     model.fit(X, y)
+    scores = pd.Series(model.coef_, index=X.columns).sort_values(ascending=False).head(3)
 
-    # Επιλογή των 3 πιο σχετιζόμενων προϊόντων
-    result = pd.Series(model.coef_[0], index=X.columns).sort_values(ascending=False).head(3)
-
-    # Μετατροπή προτεινόμενων ids σε ονόματα
+    # Μετατροπή ids σε ονόματα
     conn = create_connection()
     cursor = conn.cursor()
-    names = {}
-    for pid in result.index.tolist():
-        cursor.execute("SELECT name FROM products WHERE id = ?", (pid,))
-        res = cursor.fetchone()
-        if res:
-            names[res[0]] = round(result[pid], 2)
-    conn.close()
 
     # Όνομα προϊόντος εισόδου
-    cursor = create_connection().cursor()
     cursor.execute("SELECT name FROM products WHERE id = ?", (product_id,))
-    input_name = cursor.fetchone()
-    input_name = input_name[0] if input_name else f"ID {product_id}"
+    input_row = cursor.fetchone()
+    input_name = input_row[0] if input_row else f"ID {product_id}"
+
+    results = []
+    for pid in scores.index:
+        cursor.execute("SELECT name FROM products WHERE id = ?", (pid,))
+        name_row = cursor.fetchone()
+        name = name_row[0] if name_row else f"ID {pid}"
+        results.append({
+            "product_id": pid,
+            "name": name,
+            "score": round(scores[pid], 3)
+        })
+
+    conn.close()
+
+    # Οπτικοποίηση
+    _plot_recommendations(input_name, results)
 
     return {
-        "input_product": input_name,
-        "suggested_products": names
+        "input_product_id": product_id,
+        "input_product_name": input_name,
+        "suggested_products": results
     }
+
+def _plot_recommendations(input_name, results):
+    names = [r["name"] for r in results]
+    scores = [r["score"] for r in results]
+
+    plt.figure(figsize=(8, 4))
+    plt.barh(names, scores)
+    plt.xlabel("Συντελεστής Συσχέτισης")
+    plt.title(f"Προτεινόμενα για το προϊόν: {input_name}")
+    plt.tight_layout()
+
+    # Αποθήκευση και άνοιγμα σε browser
+    img_path = "recommendation_plot.png"
+    plt.savefig(img_path)
+    plt.close()
+
+    webbrowser.open('file://' + os.path.realpath(img_path))

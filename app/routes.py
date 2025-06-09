@@ -7,8 +7,12 @@ from app.analytics import get_purchase_statistics
 from app.analytics import generate_suggested_cart
 from app.analytics import get_frequently_bought_together
 from app.bought_together import get_suggested_products
-from app.predictor import get_logistic_prediction
+from app.predictor import get_linear_prediction
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
+from flask import send_file
+import numpy as np
+from app.web_scraper import scrape_bakalmarket_selenium
 
 from app.repository import (
     get_all_products, insert_products, delete_product_by_id, delete_all_products,
@@ -100,93 +104,20 @@ def checkout(cart_id):
 
 
 
-@app.route('/scrape/compare', methods=['GET'])
-def compare_price():
-    product_name = request.args.get("product")
-    if not product_name:
-        return jsonify({"error": "Λείπει το όνομα προϊόντος (parameter: ?product=...)"}), 400
 
-    #  1. Ανάκτηση από βάση
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT name, price, description, image_url FROM products WHERE name LIKE ?", (f"%{product_name}%",))
-    db_product = cursor.fetchone()
-    conn.close()
-
-    if not db_product:
-        return jsonify({"error": "Το προϊόν δεν βρέθηκε στη βάση"}), 404
-
-    db_name, db_price, db_desc, db_img = db_product
-
-    #  2. Scraping από StaticShop1
-    with open("StaticShop1.html", "r", encoding="utf-8") as f1:
-        soup1 = BeautifulSoup(f1, "html.parser")
-
-    found1 = None
-    for div in soup1.find_all("div", class_="product"):
-        name = div.find("h2", class_="name").text.strip()
-        if product_name.lower() in name.lower():
-            try:
-                price = float(div.find("span", class_="price").text.strip())
-                description = div.find("p", class_="description").text.strip()
-                image_url = div.find("img", class_="image")["src"]
-                found1 = {
-                    "Κατάστημα": "StaticShop1",
-                    "Τιμή": price,
-                    "Περιγραφή": description,
-                    "Εικόνα": image_url
-                }
-            except:
-                pass
-            break
-
-    #  3. Scraping από StaticShop2
-    with open("StaticShop2.html", "r", encoding="utf-8") as f2:
-        soup2 = BeautifulSoup(f2, "html.parser")
-
-    found2 = None
-    for div in soup2.find_all("div", class_="product"):
-        name = div.find("h2", class_="name").text.strip()
-        if product_name.lower() in name.lower():
-            try:
-                price = float(div.find("span", class_="price").text.strip())
-                description = div.find("p", class_="description").text.strip()
-                image_url = div.find("img", class_="image")["src"]
-                found2 = {
-                    "Κατάστημα": "StaticShop2",
-                    "Τιμή": price,
-                    "Περιγραφή": description,
-                    "Εικόνα": image_url
-                }
-            except:
-                pass
-            break
-
-    #  4. Σύγκριση
-    all_prices = [{
-        "Κατάστημα": "UnipiShop",
-        "Τιμή": db_price,
-        "Περιγραφή": db_desc,
-        "Εικόνα": db_img
-    }]
-
-    if found1:
-        all_prices.append(found1)
-    if found2:
-        all_prices.append(found2)
-
-    if all_prices:
-        cheapest = min(all_prices, key=lambda x: x["Τιμή"])["Κατάστημα"]
-    else:
-        cheapest = "Καμία τιμή δεν βρέθηκε"
-
-    return jsonify({
-        "Προϊόν": db_name,
-        "Τιμή στο UnipiShop": db_price,
-        "Στατικά Καταστήματα": all_prices[1:],  # αγνοεί UnipiShop
-        "Φθηνότερο στο": cheapest
-    })
-
+@app.route('/scrape-bakalmarket', methods=['GET'])
+def scrape_bakalmarket_endpoint():
+    """
+    Scrapes bakalmarket.gr for products and returns the data as JSON.
+    """
+    try:
+        df = scrape_bakalmarket_selenium(return_df=True)
+        if df.empty:
+            return jsonify({"error": "Δεν βρέθηκαν προϊόντα ή απέτυχε το scraping."}), 500
+        # Return as list of dicts with correct keys
+        return jsonify(df.to_dict(orient="records"))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/ai/recipe/<product_name>")
@@ -212,7 +143,17 @@ def suggest(product_id):
 
 
 
-@app.route("/analytics/predict/<int:product_id>", methods=["GET"])
-def predict_next(product_id):
-    result = get_logistic_prediction(product_id)
+
+@app.route('/analytics/linear/<int:product_id>', methods=['GET'])
+def linear_suggestions(product_id):
+    result = get_linear_prediction(product_id)
     return jsonify(result)
+
+
+
+
+
+
+
+
+

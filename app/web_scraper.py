@@ -1,48 +1,86 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 import pandas as pd
 
-# StaticShop1
-with open("StaticShop1.html", "r", encoding="utf-8") as f1:
-    soup1 = BeautifulSoup(f1, "html.parser")
+def scrape_bakalmarket_selenium(return_df=False, save_json=True):
+    url = "https://www.bakalmarket.gr/product-category/pantopoleio/"
+    driver = webdriver.Chrome()
+    driver.get(url)
 
-products1 = []
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "li.product"))
+        )
+    except Exception as e:
+        print("Timeout waiting for products:", e)
+        driver.quit()
+        if save_json:
+            import json
+            with open("bakalmarket_products.json", "w", encoding="utf-8") as f:
+                json.dump([], f, ensure_ascii=False, indent=2)
+        return pd.DataFrame()
 
-for div in soup1.find_all("div", class_="product"):
-    name = div.find("h2", class_="name").text.strip()
-    price = float(div.find("span", class_="price").text.strip())
-    description = div.find("p", class_="description").text.strip()
-    image_url = div.find("img", class_="image")["src"]
-    products1.append([name, price, description, image_url])
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    driver.quit()
 
-df1 = pd.DataFrame(products1, columns=["name", "price", "description", "image_url"])
-df1["store"] = "StaticShop1"
+    products = soup.find_all("li", class_="product")
+    print(f"Βρέθηκαν {len(products)} προϊόντα.")
 
+    data = []
+    for p in products:
+        try:
+            name_el = p.select_one("h2.woocommerce-loop-product__title")
+            if not name_el:
+                name_el = p.select_one("h3.product-name")
+            if not name_el:
+                name_el = p.find("h2")
+            if not name_el:
+                name_el = p.find("h3")
+            price_el = p.select_one("span.woocommerce-Price-amount")
+            img_el = p.select_one("img.attachment-woocommerce_thumbnail")
+            link_el = p.select_one("a.woocommerce-LoopProduct-link")
+            name = name_el.get_text(strip=True) if name_el else None
+            price_text = price_el.get_text(strip=True) if price_el else None
+            # Extract float from price string (e.g., "2,80€" -> 2.80)
+            price = None
+            if price_text:
+                import re
+                match = re.search(r"(\d+,\d+|\d+\.\d+|\d+)", price_text)
+                if match:
+                    price = float(match.group(1).replace(",", "."))
+            image_url = img_el["src"] if img_el and img_el.has_attr("src") else None
+            # Set category as "Είδη Άρτου" for all, or extract if possible
+            category = "Είδη Άρτου"
+            description = None
 
-# StaticShop2
-with open("StaticShop2.html", "r", encoding="utf-8") as f2:
-    soup2 = BeautifulSoup(f2, "html.parser")
+            print(f"Extracted: name={name}, price={price}, image_url={image_url}")
 
-products2 = []
+            if not name or price is None:
+                continue
 
-for div in soup2.find_all("div", class_="product"):
-    name = div.find("h2", class_="name").text.strip()
-    price = float(div.find("span", class_="price").text.strip())
-    description = div.find("p", class_="description").text.strip()
-    image_url = div.find("img", class_="image")["src"]
-    products2.append([name, price, description, image_url])
+            data.append({
+                "name": name,
+                "category": category,
+                "description": description,
+                "image_url": image_url,
+                "price": price
+            })
+        except Exception as e:
+            print("Σφάλμα σε προϊόν:", e)
+            continue
 
-df2 = pd.DataFrame(products2, columns=["name", "price", "description", "image_url"])
-df2["store"] = "StaticShop2"
+    df = pd.DataFrame(data)
+    df.to_csv("bakalmarket_products.csv", sep=";", index=False)
 
+    if save_json:
+        import json
+        with open("bakalmarket_products.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
-# Συγχώνευση αποτελεσμάτων
-all_products = pd.concat([df1, df2], ignore_index=True)
+    if return_df:
+        return df
 
-# Αποθήκευση σε αρχείο CSV (προαιρετικό)
-all_products.to_csv("scraped_static_shops.csv", index=False, encoding="utf-8")
-
-#  Προβολή πρώτων γραμμών
-print(all_products.head())
-
-
-
+    print(df.head())
