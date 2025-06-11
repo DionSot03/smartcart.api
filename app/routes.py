@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 from flask import send_file
 import numpy as np
 from app.web_scraper import scrape_bakalmarket_selenium
+import requests
+import os
+from app.compare_products import search_products_by_keyword
 
 from app.repository import (
     get_all_products, insert_products, delete_product_by_id, delete_all_products,
@@ -94,6 +97,8 @@ def remove_item_from_cart(cart_id, cart_item_id):
     remove_from_cart(cart_id, cart_item_id)
     return jsonify({'message': f'Product {cart_item_id} removed from cart {cart_id}'}), 200
 
+
+
 @app.route('/carts/<int:cart_id>/checkout', methods=['POST'])
 def checkout(cart_id):
     success, message = checkout_cart(cart_id)
@@ -120,12 +125,22 @@ def scrape_bakalmarket_endpoint():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/ai/recipe/<product_name>")
-def recipe(product_name):
-    result = get_recipe_for(product_name)
-    if result:
-        return jsonify(result)
-    return jsonify({"error": "Δεν υπάρχει συνταγή για αυτό το προϊόν"}), 404
+
+
+
+
+
+@app.route("/search-products/<string:keyword>", methods=["GET"])
+def search_products(keyword):
+    try:
+        results = search_products_by_keyword(keyword)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
+
+
+
+
 
 @app.route('/analytics/stats', methods=['GET'])
 def analytics_stats():
@@ -148,6 +163,41 @@ def suggest(product_id):
 def linear_suggestions(product_id):
     result = get_linear_prediction(product_id)
     return jsonify(result)
+
+@app.route('/ai/recipe-gen/<product_name>', methods=['GET'])
+def recipe_gen(product_name):
+    """
+    Uses Groq API to generate a recipe for the given product name.
+    """
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # Correct: get from environment variable
+    if not GROQ_API_KEY:
+        return jsonify({"error": "GROQ_API_KEY not set in environment"}), 500
+
+    prompt = f"Give me a simple recipe that uses '{product_name}' as a main ingredient."
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "llama3-8b-8192",  # Or another available model
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
+    }
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers=headers,
+            json=data,
+            timeout=30
+        )
+        response.raise_for_status()
+        result = response.json()
+        recipe_text = result["choices"][0]["message"]["content"]
+        return jsonify({"product": product_name, "recipe": recipe_text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 

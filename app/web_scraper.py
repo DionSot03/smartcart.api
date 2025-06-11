@@ -71,12 +71,10 @@ def scrape_bakalmarket_selenium(return_df=False, save_json=True):
             continue
 
     df = pd.DataFrame(data)
-    df.to_csv("bakalmarket_products.csv", sep=";", index=False)
-
-    if save_json:
+    # Save as JSON instead of HTML or CSV
+    with open("bakalmarket_products.json", "w", encoding="utf-8") as f:
         import json
-        with open("bakalmarket_products.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
     if return_df:
         return df
